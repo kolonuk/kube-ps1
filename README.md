@@ -1,5 +1,4 @@
-kube-ps1: Kubernetes prompt for bash and zsh
-============================================
+# kube-ps1: Kubernetes prompt for bash and zsh
 
 A script that lets you add the current Kubernetes context and namespace
 configured on `kubectl` to your Bash/Zsh prompt strings (i.e. the `$PS1`).
@@ -16,41 +15,68 @@ Inspired by several tools used to simplify usage of `kubectl`.
 
 ## Installing
 
-### MacOS
+### Package managers
+
+### MacOS Brew Ports
 
 Homebrew package manager:
 
+```sh
+brew update
+brew install kube-ps1
 ```
-$ brew update
-$ brew install kube-ps1
+
+### Arch Linux
+AUR Package available at [https://aur.archlinux.org/packages/kube-ps1/](https://aur.archlinux.org/packages/kube-ps1/).
+
+### Oh My Zsh
+
+https://github.com/ohmyzsh/ohmyzsh
+
+kube-ps1 is included as a plugin in the oh-my-zsh project.  To enable it, edit your `~/.zshrc` and
+add the plugin:
+
+```bash
+plugins=(
+  kube-ps1
+)
+
+PROMPT='$(kube_ps1)'$PROMPT # or RPROMPT='$(kube_ps1)'
 ```
+
+
+## Zsh Plugin Managers
+
+### Using [zinit](https://github.com/zdharma-continuum/zinit)
+
+Update `.zshrc` with:
+```sh
+zinit light jonmosco/kube-ps1
+PROMPT='$(kube_ps1)'$PROMPT # or RPROMPT='$(kube_ps1)'
+```
+
+### Fig
+
+[Fig](https://fig.io) adds apps, shortcuts, and autocomplete to your existing terminal.
+
+Install `kube-ps1` in zsh, bash, or fish with one click.
+
+<a href="https://fig.io/plugins/other/kube-ps1" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
+
 ### From Source
 
 1. Clone this repository
 2. Source the kube-ps1.sh in your `~/.zshrc` or your `~/.bashrc`
 
-### Arch Linux
-AUR Package available at [https://aur.archlinux.org/packages/kube-ps1/](https://aur.archlinux.org/packages/kube-ps1/).
-
 #### Zsh
 ```sh
 source /path/to/kube-ps1.sh
-PROMPT='$(kube_ps1)'$PROMPT
+PROMPT='$(kube_ps1)'$PROMPT # or RPROMPT='$(kube_ps1)'
 ```
 #### Bash
 ```sh
 source /path/to/kube-ps1.sh
 PS1='[\u@\h \W $(kube_ps1)]\$ '
-```
-
-### Zsh Plugin Managers
-
-#### Using [zinit](https://github.com/zdharma-continuum/zinit)
-
-Update `.zshrc` with:
-```sh
-zinit light jonmosco/kube-ps1
-PROMPT='$(kube_ps1)'$PROMPT
 ```
 
 ## Requirements
@@ -63,22 +89,22 @@ Official installation instructions and binaries are available:
 If using this with OpenShift, the `oc` tool needs installed.  It can be obtained
 from brew ports:
 
-```
+```sh
 brew install openshift-cli
 ```
 or the source can be downloaded:
 
-[OC Client Tools](https://www.openshift.org/download.html)
+[OC Client Tools](https://github.com/okd-project/okd/releases)
 
 Set the binary to `oc` with the following environment variable:
 
-```
+```sh
 KUBE_PS1_BINARY=oc
 ```
 
 If neither binary is available, the prompt will print the following:
 
-```
+```sh
 (<symbol>|BINARY-N/A:N/A)
 ```
 
@@ -109,6 +135,31 @@ If the current-context is not set, kube-ps1 will return the following:
 (<symbol>|N/A:N/A)
 ```
 
+## Symbols
+
+The default symbols are UTF8 and should work with most fonts. Due to differences
+in font and terminal spacing, a `KUBE_PS1_SYMBOL_PADDING` option is available to provide an extra space
+after the symbol.  
+
+In order to have the OpenShift icon, a patched font that contains the glyph must
+be installed.  [Nerd Fonts](https://www.nerdfonts.com/) provides an OpenShift icon. 
+Follow the install directions (out of scope for this project) to install a patched
+font.  
+
+Once installed and the font is made active in a terminal session, test to see if the symbol is available:
+
+![prompt openshift na](img/screenshot-oc-na.png)
+
+If the symbol is not available, it will display an empty set of brackets or similar:
+```sh
+ echo -n "\ue7b7"
+ 
+```
+
+Below is a screenshot of the OpenShift symbol using the Inconsolata font from Nerd Fonts:
+
+![prompt openshift](img/screenshot-oc.png)
+
 ## Enabling/Disabling
 
 If you want to stop showing Kubernetes status on your prompt string temporarily
@@ -136,7 +187,7 @@ the following environment variables:
 | `KUBE_PS1_NS_ENABLE` | `true` | Display the namespace. If set to `false`, this will also disable `KUBE_PS1_DIVIDER` |
 | `KUBE_PS1_PREFIX` | `(` | Prompt opening character  |
 | `KUBE_PS1_SYMBOL_ENABLE` | `true ` | Display the prompt Symbol. If set to `false`, this will also disable `KUBE_PS1_SEPARATOR` |
-| `KUBE_PS1_SYMBOL_PADDING` | `true` | Adds a space (padding) after the symbol to prevent clobbering prompt characters |
+| `KUBE_PS1_SYMBOL_PADDING` | `false` | Adds a space (padding) after the symbol to prevent clobbering prompt characters |
 | `KUBE_PS1_SYMBOL_DEFAULT` | `⎈ ` | Default prompt symbol. Unicode `\u2388` |
 | `KUBE_PS1_SYMBOL_USE_IMG` | `false` | ☸️  ,  Unicode `\u2638` as the prompt symbol |
 | `KUBE_PS1_SEPARATOR` | &#124; | Separator between symbol and context name |
@@ -232,18 +283,23 @@ minimal configuration before submitting a bug report.
 This can be done as follows for each shell before loading kube-ps1:
 
 Bash:
-```bash
+```sh
 bash --norc
 ```
 
 Zsh:
-```bash
+```sh
 zsh -f
 or
 zsh --no-rcs
 ```
 
-## Contributors
+For the OpenShift symbol, a patched font that contains the icon must be installed.
+[Nerd Fonts Downloads](https://www.nerdfonts.com/font-downloads) provides patched
+fonts containing the symbol.  Please consult their documentation for this, support
+is out of scope for this project.
+
+### Contributors
 
 * [Ahmet Alp Balkan](https://github.com/ahmetb)
 * Jared Yanovich
